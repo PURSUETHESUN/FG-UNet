@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from src import pvt_v2
+from models import pvt_v2
 from timm.models.vision_transformer import _cfg
 
 #dilation convlution
