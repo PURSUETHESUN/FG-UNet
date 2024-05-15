@@ -84,7 +84,7 @@ class SpatialAttention(nn.Module):
 def run_sobel(conv_x, conv_y, input):
     g_x = conv_x(input)
     g_y = conv_y(input)
-    g = torch.sqrt(torch.pow(g_x, 2) + torch.pow(g_y, 2))#计算总的梯度幅度，也可使用绝对值
+    g = torch.sqrt(torch.pow(g_x, 2) + torch.pow(g_y, 2))
     return torch.sigmoid(g) * input
 
 def get_sobel(in_chan, out_chan):
@@ -415,7 +415,7 @@ class backbone(nn.Module):
         return pyramid
 
     def forward(self, x):
-        p1, p2, p3, p4 = self.get_pyramid(x)#4个stage输出
+        p1, p2, p3, p4 = self.get_pyramid(x)
         p21 = F.interpolate(input=p2, size=p1.size()[2:], mode="bilinear", align_corners=False)
         x1 = self.MS[0](torch.cat([p1, p21], dim=1))
         x1 = self.SFA[0](x1)
