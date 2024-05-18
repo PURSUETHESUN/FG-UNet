@@ -25,7 +25,6 @@ def dice_loss(prediction, target):
 
 def train_loss(prediction, target, loss_weight=[1.,1.], ignore_index: int = 255):
     # Average of Dice coefficient for all batches, or for a single mask
-    # 计算一个batch中所有图片的平均损失近似为batch损失
     d = 0.
     batch_size = prediction.shape[0]
     if prediction.shape[1] == 1:
@@ -35,7 +34,6 @@ def train_loss(prediction, target, loss_weight=[1.,1.], ignore_index: int = 255)
         x_i = prediction[i].reshape(-1)
         t_i = target[i].reshape(-1)
         if ignore_index >= 0:
-            # 找出mask中不为ignore_index的区域
             roi_mask = torch.ne(t_i, ignore_index)
             x_i = x_i[roi_mask]
             t_i = t_i[roi_mask]
@@ -71,14 +69,12 @@ def train_loss(prediction, target, loss_weight=[1.,1.], ignore_index: int = 255)
 #
 def dice_coeff(x: torch.Tensor, target: torch.Tensor, ignore_index: int = -100, epsilon=1e-6):
     # Average of Dice coefficient for all batches, or for a single mask
-    # 计算一个batch中所有图片某个类别的dice_coefficient
     d = 0.
     batch_size = x.shape[0]
     for i in range(batch_size):
         x_i = x[i].reshape(-1)
         t_i = target[i].reshape(-1)
         if ignore_index >= 0:
-            # 找出mask中不为ignore_index的区域
             roi_mask = torch.ne(t_i, ignore_index)
             x_i = x_i[roi_mask]
             t_i = t_i[roi_mask]

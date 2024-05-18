@@ -55,7 +55,6 @@ def main(args):
     # segmentation nun_classes + background
     num_classes = args.num_classes + 1
 
-    # 用来保存训练以及验证过程中信息
     results_file = "result_model.txt"
 
     train_dataset = DriveDataset(args.data_path,
@@ -85,20 +84,6 @@ def main(args):
     model.to(device)
     print("numworks:",num_workers)
 
-    # if args.weights != "":
-    #     weights_dict = torch.load("./deeplabv3_resnet50_coco.pth", map_location='cpu')
-    #
-    #     if num_classes != 2:
-    #         # 官方提供的预训练权重是21类(包括背景)
-    #         # 如果训练自己的数据集，将和类别相关的权重删除，防止权重shape不一致报错
-    #         for k in list(weights_dict.keys()):
-    #             if "classifier.4" in k:
-    #                 del weights_dict[k]
-    #
-    #     missing_keys, unexpected_keys = model.load_state_dict(weights_dict, strict=False)
-    #     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
-    #         print("missing_keys: ", missing_keys)
-    #         print("unexpected_keys: ", unexpected_keys)
 
     params_to_optimize = [p for p in model.parameters() if p.requires_grad]
 
@@ -106,7 +91,6 @@ def main(args):
 
     scaler = torch.cuda.amp.GradScaler() if args.amp else None
 
-    # 创建学习率更新策略，这里是每个step更新一次(不是每个epoch)
     lr_scheduler = create_lr_scheduler_poly(optimizer, len(train_loader), args.epochs, warmup=True)
 
     # import matplotlib.pyplot as plt
@@ -154,7 +138,6 @@ def main(args):
 
         # write into txt
         with open(results_file, "a") as f:
-            # 记录每个epoch对应的train_loss、lr以及验证集各指标
             train_info = f"[epoch: {epoch}] " + f"loss: {mean_loss:.4f} " + f"lr: {lr:.6f}\n"
             f.write(train_info + val_info + f"Dice: {dice:.2f}\n" + f"Best_epoch: {best_epoch}\t" + f"Best_Dice: {best_dice :0.2f}\n\n")
 

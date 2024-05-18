@@ -33,9 +33,7 @@ class DriveDataset(Dataset):
     def __getitem__(self, idx):
         img = Image.open(self.img_list[idx]).convert('RGB')
         mask = Image.open(self.mask[idx]).convert('L')
-        #前景变1，背景为0。如果mask是调色板格式，不需要除以255
         mask = np.array(mask) / 255
-        # 这里转回PIL的原因是，transforms中是对PIL数据进行处理
         mask = Image.fromarray(mask)
         if self.transforms is not None:
             img, mask = self.transforms(img, mask)
@@ -71,19 +69,13 @@ if __name__ == '__main__':
     # test_dataset = DriveDataset("../data_set/ISIC2018", flag='test')
     # print(f'test: {len(test_dataset)}')
 
-    #获取第一个images和mask
     # i, t = train_dataset[0]
     # i, t = val_dataset[0]
     # i,t = test_dataset[0]
-    # # 创建包含两个子图的图像窗口
     # fig, axes = plt.subplots(1, 2)
-    # # 在第一个子图中显示第一幅图像
     # axes[0].imshow(i)
     # axes[0].set_title("Image")
-    # # 在第二个子图中显示第二幅图像
     # axes[1].imshow(t.convert('L'),cmap='gray')
     # axes[1].set_title("mask")
-    # # 调整子图之间的间距
     # plt.tight_layout()
-    # # 显示图像窗口
     # plt.show()
