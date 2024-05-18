@@ -13,13 +13,14 @@ corresponding to the ablation experiments in Table 3, numbered (a) through (f). 
 ![Results of visualization of different blocks.](visualization/Grad_CAM_visualization.png)
 > These visualizations provide compelling evidence for the proposed blocks. For example, when the MGA block is removed, the network is somewhat limited in extracting features of pneumonia infections of different sizes. Compared to (c), with the assistance of the BFF block, FG-UNet demonstrates excellent performance in boundary guidance. Furthermore, when the FGCA block is removed, the network struggles to capture pneumonia infection areas, effectively proving the contextual awareness capability of this block. Lastly, but equally important, the network's attention to lesions significantly decreases when the BIA block is removed. These visualizations demonstrate the strong advantages of the designed blocks in extracting foreground, background, and boundary features.
 ## Qualitative comparison
-Besides, qualitative analyses are conducted on three datasets. In the third line, FG-UNet accurately segments COVID-19 pneumonia. Other methods may produce false positives (e.g. UNet, Swin-UNet, SCUNet++) or false negatives (e.g. CTO, ACC-UNet).
+The qualitative analyses are conducted on three datasets. In the third line, FG-UNet accurately segments COVID-19 pneumonia. Other methods may produce false positives (e.g. UNet, Swin-UNet, SCUNet++) or false negatives (e.g. CTO, ACC-UNet).
 ![Results of qualitative comparison of different networks.](visualization/Qualitative_comparison.png)
 # Experiments
 ## Comparative Experiments
 ![Table 1.](Experiments/Tab1.png)
 ![Table 2.](Experiments/Tab2.png)
 ## Ablation Experiments
+Due to space constraints, only the experimental results of polyps are presented in the manuscript. The ablation experiments were conducted on three publicly available datasets. Bold red indicates the optimal value, while bold blue indicates the suboptimal value.
 ![Ablation experiments](Experiments/Ablation_Experiments.png)
 # Environment:
 `conda create -n FGUNet python=3.10.9`
