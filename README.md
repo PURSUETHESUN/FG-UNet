@@ -4,7 +4,16 @@ This is an officially public repository of FG-UNet source code.
 A PyTorch implementation of the FG-Unet can be found in /models directory
 # Visualization Results
 ## Grad-CAM visualization
+To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, 
+corresponding to the ablation experiments in Table 3, numbered (a) through (f). The specific details are as follows:
++ (a): w/o high-level and low-level feature guidance;
++ (b): w/o MGA;
++ (c): w/o BFF and object enhancement features;
++ (d): w/o FGCA;
++ (e): w/o BIA;
++ (f): Take only the prediction of the final decoder.
 ![Results of visualization of different blocks.](visualization/Grad_CAM_visualization.png)
+> These visualizations provide compelling evidence for the proposed blocks. For example, when the MGA block is removed, the network is somewhat limited in extracting features of pneumonia infections of different sizes. Compared to (c), with the assistance of the BFF block, FG-UNet demonstrates excellent performance in boundary guidance. Furthermore, when the FGCA block is removed, the network struggles to capture pneumonia infection areas, effectively proving the contextual awareness capability of this block. Lastly, but equally important, the network's attention to lesions significantly decreases when the BIA block is removed. These visualizations demonstrate the strong advantages of the designed blocks in extracting foreground, background, and boundary features.
 ## Qualitative comparison
 ![Results of qualitative comparison of different networks.](visualization/Qualitative_comparison.png)
 # Experiments
