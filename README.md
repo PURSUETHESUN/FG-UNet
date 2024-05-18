@@ -1,7 +1,5 @@
 # FG-UNet: Rethinking Feature Guidance of UNet for medical image segmentation
 This is an officially public repository of FG-UNet source code.
-# Model Implementation
-A PyTorch implementation of the FG-Unet can be found in /models directory
 # Visualization Results
 ## Grad-CAM visualization
 To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, 
