@@ -146,11 +146,11 @@ class EAM(nn.Module):
 
         return out
 
-class Dual_Attention(nn.Module):
+class Bi_Attention(nn.Module):
     def __init__(self,
                  embed_dims,
                  kernel_size=3):
-        super(Dual_Attention, self).__init__()
+        super(Bi_Attention, self).__init__()
         self.embed_dims = embed_dims
         mid_dim = 4 * embed_dims
         self.fc1 = nn.Conv2d(
@@ -291,20 +291,20 @@ class MultiOrderGatedAggregation(nn.Module):
         x = self.proj_2(xg+xl)
         return x
 
-class MSCA(nn.Module):
+class MGA_BIA(nn.Module):
     def __init__(self, inchannel):
-        super(MSCA, self).__init__()
-        self.MOGA = MultiOrderGatedAggregation(embed_dims = inchannel)
-        self.DA = Dual_Attention(embed_dims = inchannel)
+        super(MGA_BIA, self).__init__()
+        self.MGA = MultiOrderGatedAggregation(embed_dims = inchannel)
+        self.BIA = Bi_Attention(embed_dims = inchannel)
 
     def forward(self, x):
-        x = self.MOGA(x) + x
-        x = self.DA(x) + x
+        x = self.MGA(x) + x
+        x = self.BIA(x) + x
         return x
 
-class Dual_Guide(nn.Module):
+class FGCA_BIA(nn.Module):
     def __init__(self, in_channel, out_channel):
-        super(Dual_Guide, self).__init__()
+        super(FGCA_BIA, self).__init__()
         mid_dim = in_channel//2
         self.obj = nn.Sequential(
             Conv1x1(inplanes=3*mid_dim, planes=mid_dim),
@@ -325,7 +325,7 @@ class Dual_Guide(nn.Module):
             Conv1x1(inplanes= mid_dim, planes=mid_dim)
         )
 
-        self.dual_att = Dual_Attention(embed_dims=3*mid_dim)
+        self.bi_att = Bi_Attention(embed_dims=3 * mid_dim)
         self.re = Conv1x1(inplanes=3*mid_dim, planes=64)
 
     def forward(self, x_edg, x_obj):
@@ -340,11 +340,11 @@ class Dual_Guide(nn.Module):
         x_back = -1 * x_obj + 1
         x_b = self.bck(torch.cat([x_edg, x_bound, x_back], dim=1)) + x_back
 
-        #
+        # branch2
         x = self.bou(torch.cat([x_o, x_b], dim=1))
         x_bound = 1 - torch.abs_(torch.sigmoid(x) - 0.5) / 0.5
 
-        x = self.dual_att(torch.cat([x_o, x_bound, x_b], dim=1))
+        x = self.bi_att(torch.cat([x_o, x_bound, x_b], dim=1))
         x = self.re(x)
         return x
 
@@ -361,11 +361,11 @@ class backbone(nn.Module):
         for i in [1, 4, 7, 10]:
             self.backbone[i] = torch.nn.Sequential(*list(self.backbone[i].children()))
 
-        self.MS = nn.ModuleList([])
-        self.MS.append(BasicConv2d(in_planes=64+128,out_planes=64,kernel_size=3, stride=1,padding=1))
-        self.MS.append(BasicConv2d(in_planes=64+128+320,out_planes=64,kernel_size=3,stride=1,padding=1))
-        self.MS.append(BasicConv2d(in_planes=64+320+512, out_planes=64, kernel_size=3, stride=1, padding=1))
-        self.MS.append(BasicConv2d(in_planes=64+512, out_planes=64, kernel_size=3, stride=1, padding=1))
+        self.RE = nn.ModuleList([])
+        self.RE.append(BasicConv2d(in_planes=64 + 128, out_planes=64, kernel_size=3, stride=1, padding=1))
+        self.RE.append(BasicConv2d(in_planes=64 + 128 + 320, out_planes=64, kernel_size=3, stride=1, padding=1))
+        self.RE.append(BasicConv2d(in_planes=64 + 320 + 512, out_planes=64, kernel_size=3, stride=1, padding=1))
+        self.RE.append(BasicConv2d(in_planes=64 + 512, out_planes=64, kernel_size=3, stride=1, padding=1))
 
         self.g1 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=1, kernel_size=1),
@@ -394,9 +394,9 @@ class backbone(nn.Module):
             nn.Conv2d(in_channels=64, out_channels=1, kernel_size=1),
             nn.Sigmoid()
         )
-        self.SFA = nn.ModuleList([])
+        self.M_B = nn.ModuleList([])
         for i in range(4):
-            self.SFA.append(nn.Sequential(MSCA(64)))
+            self.M_B.append(nn.Sequential(MGA_BIA(64)))
 
     def get_pyramid(self, x):
         pyramid = []
@@ -417,28 +417,28 @@ class backbone(nn.Module):
     def forward(self, x):
         p1, p2, p3, p4 = self.get_pyramid(x)
         p21 = F.interpolate(input=p2, size=p1.size()[2:], mode="bilinear", align_corners=False)
-        x1 = self.MS[0](torch.cat([p1, p21], dim=1))
-        x1 = self.SFA[0](x1)
+        x1 = self.RE[0](torch.cat([p1, p21], dim=1))
+        x1 = self.M_B[0](x1)
         x1 = x1 * self.g1(p21)
 
         p12 = F.interpolate(input=x1,size=p2.size()[2:],mode="bilinear",align_corners=False)
         p32 = F.interpolate(input=p3,size=p2.size()[2:],mode="bilinear",align_corners=False)
-        x2 = self.MS[1](torch.cat([p12, p2, p32], dim=1))
+        x2 = self.RE[1](torch.cat([p12, p2, p32], dim=1))
         x2 = x2 * self.g21(p12)
-        x2 = self.SFA[1](x2)
+        x2 = self.M_B[1](x2)
         x2 = x2 * self.g22(p32)
 
         p23 = F.interpolate(input=x2,size=p3.size()[2:],mode="bilinear", align_corners=False)
         p43 = F.interpolate(input=p4,size=p3.size()[2:],mode="bilinear", align_corners=False)
-        x3 = self.MS[2](torch.cat([p23, p3, p43], dim=1))
+        x3 = self.RE[2](torch.cat([p23, p3, p43], dim=1))
         x3 = x3 * self.g31(p23)
-        x3 = self.SFA[2](x3)
+        x3 = self.M_B[2](x3)
         x3 = x3 * self.g32(p43)
 
         p34 = F.interpolate(input=x3, size=p4.size()[2:], mode="bilinear", align_corners=False)
-        x4 = self.MS[3](torch.cat([p34, p4], dim=1))
+        x4 = self.RE[3](torch.cat([p34, p4], dim=1))
         x4 = x4 * self.g4(p34)
-        x4 = self.SFA[3](x4)
+        x4 = self.M_B[3](x4)
 
         return x1, x2, x3, x4
 
@@ -455,14 +455,11 @@ class FG(nn.Module):
         self.obj2 = nn.Conv2d(64,1,kernel_size=1)
         self.obj1 = nn.Conv2d(64,1,kernel_size=1)
 
-        self.dg1 = Dual_Guide(in_channel=64+64, out_channel=64)
-        self.dg2 = Dual_Guide(in_channel=64+64, out_channel=64)
-        self.dg3 = Dual_Guide(in_channel=64+64, out_channel=64)
-        self.dg4 = Dual_Guide(in_channel=64+64, out_channel=64)
+        self.dg1 = FGCA_BIA(in_channel=64 + 64, out_channel=64)
+        self.dg2 = FGCA_BIA(in_channel=64 + 64, out_channel=64)
+        self.dg3 = FGCA_BIA(in_channel=64 + 64, out_channel=64)
+        self.dg4 = FGCA_BIA(in_channel=64 + 64, out_channel=64)
 
-        self.predictor_obj4 = BasicConv2d(in_planes=64,out_planes=16,kernel_size=1,padding=0)
-        self.predictor_obj3 = BasicConv2d(in_planes=64+16,out_planes=32,kernel_size=1,padding=0)
-        self.predictor_obj2 = BasicConv2d(in_planes=64+32,out_planes=48,kernel_size=1,padding=0)
         self.predictor1 = nn.Conv2d(64+6, self.num_class, 1)
         self.predictor2 = nn.Conv2d(64, self.num_class, 1)
         self.predictor3 = nn.Conv2d(64, self.num_class, 1)
