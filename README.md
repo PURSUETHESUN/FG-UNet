@@ -11,6 +11,7 @@ corresponding to the ablation experiments in Table 3, numbered (a) through (f). 
 + (e): w/o BIA;
 + (f): Take only the prediction of the final decoder.
 ![Results of visualization of different blocks.](visualization/Grad_CAM_visualization.png)
+> These visualizations provide compelling evidence for the proposed blocks.
 > For example, when the MGA block is removed, the network is slightly challenged in extracting COVID-19 pneumonia of different sizes. 
 > Compared to (c), the FG-UNet with the help of the BFF block shows excellent performance in boundary segmentation. 
 > Furthermore, the network struggles to capture pneumonia areas when the FGCA block is removed, effectively proving the contextual awareness capability of the FGCA block. 
