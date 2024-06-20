@@ -1,5 +1,11 @@
 # FG-UNet: Rethinking Feature Guidance of UNet for medical image segmentation
 This is an officially public repository of FG-UNet source code. Our repository will continue to be updated based on subsequent research.
+# Abstract
+Despite the evident advantages of variants of UNet in medical image segmentation, these methods still exhibit limitations in the extraction of foreground, background, and boundary features. This paper introduces an enhanced UNet network, FG-UNet, rooted in feature guidance principles. Specifically, adjacent high-level and low-level features are used to gradually guide the network to perceive organizations and details of lesions, respectively. Subsequently, to accommodate lesion features of different scales, the multi-order gated aggregation (MGA) block is designed based on multi-order feature interactions to extract multi-scale features. Furthermore, a novel feature-guided context-aware (FGCA) block is devised to enhance the capability of FG-UNet to segment lesions by fusing boundary-enhancing features, object-enhancing features, and uncertain areas. Eventually, a bi-dimensional interaction attention (BIA) block is designed to enable the network to highlight crucial features more effectively. To appraise the efficacy of FG-UNet, extensive experiments were conducted on Kvasir-seg, ISIC2018, and COVID-19 datasets. The experimental results illustrate that FG-UNet achieves a DSC score of 92.70% on the Kvasir-seg dataset, which is 1.15% higher than that of the latest SCUNet++, 4.70% higher than that of ACC-UNet, and 5.17% higher than that of UNet. FG-UNet obtains state-of-the-art metrics in different medical image segmentation tasks compared to other networks.
+# Overview
+## Overall architecture of FG-UNet
+![Overall architecture.](Fig/Fig1.png)
+![The detailed structure of different blocks: MGA block (a), BFF block (b), FGCA block (c) and BIA block (d).](Fig/fig2.png)
 # Visualization Results
 ## Grad-CAM visualization
 To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, 
@@ -22,10 +28,9 @@ The qualitative analyses are conducted on three datasets. In the third line, FG-
 # Experiments
 ## Comparative Experiments
 ![Table 1.](Experiments/Tab1.png)
-![Table 2.](Experiments/Tab2.png)
 ## Ablation Experiments
 Due to space constraints, only the experimental results of polyps are presented in the manuscript. The ablation experiments were conducted on three publicly available datasets. Bold red indicates the optimal value, while bold blue indicates the suboptimal value.
-![Ablation experiments](Experiments/Ablation_Experiments.png)
+![Ablation experiments](Experiments/Tab2.png)
 # Environment:
 `conda create -n FGUNet python=3.10.9`
 
