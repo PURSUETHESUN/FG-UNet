@@ -6,10 +6,14 @@ Despite the evident advantages of variants of UNet in medical image segmentation
 ## Overall architecture of FG-UNet
 ![Overall architecture.](Fig/Fig1.png)
 ![The detailed structure of different blocks: MGA block (a), BFF block (b), FGCA block (c) and BIA block (d).](Fig/fig2.png)
+# Experiments
+## Comparative Experiments
+![Experiments.](Experiments/Tab1.png)
+## Ablation Experiments
+![Ablation experiments](Experiments/Tab2.png)
 # Visualization Results
 ## Grad-CAM visualization
-To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, 
-corresponding to the ablation experiments in Table 3, numbered (a) through (f). The specific details are as follows:
+To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, corresponding to the ablation experiments in Table 2, numbered (a) through (f). The specific details are as follows:
 + (a): w/o high-level and low-level feature guidance;
 + (b): w/o MGA;
 + (c): w/o BFF and object enhancement features;
@@ -25,12 +29,6 @@ corresponding to the ablation experiments in Table 3, numbered (a) through (f). 
 ## Qualitative comparison
 The qualitative analyses are conducted on three datasets. In the third line, FG-UNet accurately segments COVID-19 pneumonia. Other methods may produce false positives (e.g. UNet, Swin-UNet, SCUNet++) or false negatives (e.g. CTO, ACC-UNet).
 ![Results of qualitative comparison of different networks.](visualization/Qualitative_comparison.png)
-# Experiments
-## Comparative Experiments
-![Table 1.](Experiments/Tab1.png)
-## Ablation Experiments
-Due to space constraints, only the experimental results of polyps are presented in the manuscript. The ablation experiments were conducted on three publicly available datasets. Bold red indicates the optimal value, while bold blue indicates the suboptimal value.
-![Ablation experiments](Experiments/Tab2.png)
 # Environment:
 `conda create -n FGUNet python=3.10.9`
 
