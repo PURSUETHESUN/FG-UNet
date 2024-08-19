@@ -5,7 +5,6 @@ Despite the evident advantages of variants of UNet in medical image segmentation
 # Overview
 ## Overall architecture of FG-UNet
 ![Overall architecture.](Fig/Fig1.png)
-![The detailed structure of different blocks: MGA block (a), BFF block (b), FGCA block (c) and BIA block (d).](Fig/fig2.png)
 # Experiments
 ## Comparative Experiments
 ![Experiments.](Experiments/Tab1.png)
