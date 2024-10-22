@@ -9,7 +9,12 @@ Despite the evident advantages of variants of UNet in medical image segmentation
 ## Comparative Experiments
 ![Experiments.](Experiments/Tab1.png)
 ## Ablation Experiments
-![Ablation experiments](Experiments/Tab2.png)
+![Ablation experiments1](Experiments/Tab2.png)
+## Supplemental Ablation Experiments
+The experimental results for the dilation factor d.
+![Ablation experiments2](Experiments/d.png)
+The experimental results of different module combinations on the Kvasir-seg dataset
+![Ablation experiments2](Experiments/K.png)
 # Visualization Results
 ## Grad-CAM visualization
 To validate the effectiveness of the proposed blocks, visualizations using Grad-CAM are presented, corresponding to the ablation experiments in Table 2, numbered (a) through (f). The specific details are as follows:
